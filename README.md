@@ -54,6 +54,21 @@ Another important note is that the resulting array should be stored in Arduino�
 In this way, we generate Arduino compatible lookup table within minutes.  
 
 ## 4) Implementing Lookup Table in Arduino  
+![lookup_table_arduino_picture](https://github.com/user-attachments/assets/1943f40c-449c-4245-adfd-647c271344b5)  
+
+Here’s the portion of the lookup table in the Arduino. The important point is to add “PROGMEM” 
+word after the array definition which tells the compiler to save this array into program memory. 
+However, the program memory is only readable. To read a value from our stored array, this method 
+can be used:  
+*Out_PWM = pgm_read_word(&LookUpTable[selected_y][selected_x]);*  
+The variables selected_y and selected_x defines the index values to reach the data in lookup 
+table. Here’s how we define them:  
+<img width="302" alt="image" src="https://github.com/user-attachments/assets/82c52a0a-887a-43a5-b7e0-e68223b088f3">  
+
+Why we use rounded inputs is that: Since we resized our lookup table array, shortened it, we can 
+not directly access to it using ordinary values. Because our inputs, rpm_error and change_of_rpm_error is changing continuously, not by incremented by 20. So, we need to use 
+interpolation to reach our closest desired value in the lookup table. For instance, if our 
+rpm_error is 585,  
 
 
 
