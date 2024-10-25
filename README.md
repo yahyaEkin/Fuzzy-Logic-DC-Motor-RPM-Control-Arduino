@@ -69,6 +69,47 @@ Why we use rounded inputs is that: Since we resized our lookup table array, shor
 not directly access to it using ordinary values. Because our inputs, rpm_error and change_of_rpm_error is changing continuously, not by incremented by 20. So, we need to use 
 interpolation to reach our closest desired value in the lookup table. For instance, if our 
 rpm_error is 585,  
+*585/20 = 29.25*   
+*Round(29.25) = 29*   
+*29*20 = 580*  
+To find which index value is corresponds to 580, the map() function of the Arduino is used. 
+Let’s say 580 is the x’th input in our shortened lookup table, so in order to  access the output 
+data according to 580, we use the index value x.  
+
+## 5) Code Explanation  
+Here’s the flowchart of the program.The program gets user input as desired RPM and 
+fuzzy controller is used to reach the desired RPM and keep the motor on desired RPM. Full 
+code is available on ino file. The main logic is taking the rpm data from the motor, calculate 
+rpm error and rpm error change to use input for fuzzy inference system, obtain the response of 
+the fuzzy system via lookup table, use the output control pwm to drive the motor and so on. 
+There is a point shoul I note that the output PWM is not the output cames from the lookup table. 
+Previously, I used that to drive the motor but motor stalls since most of the time the adjustments 
+made from the fuzzy system is relatively small to drive the motor. After couple of hours of error 
+checking and researching, I noticed that the output PWM value from the fuzzy inference 
+represents the change in the output, not the output to drive the motor. So, I adjusted the code in 
+that way, this is why we have separate variable to drive the motor as drivePWM and Out_PWM. 
+Out_PWM is the PWM value comes from fuzzy inference. DrivePWM is the PWM value to 
+drive motor. DrivePWM can be calculated as:  
+
+<img width="383" alt="image" src="https://github.com/user-attachments/assets/48e16a5d-1952-4a93-905e-203933a5355d">   
+  
+## 6) Results  
+The results are taken from the Arduino serial monitor and transferred to excel to 
+process the data. The RPM and PWM graph of fuzzy controller is attached below.  
+
+<img width="373" alt="image" src="https://github.com/user-attachments/assets/28204f16-f40b-4131-859b-df28f2b5caf7">  
+From the graph above, the motor RPM and desired RPM can be tracked, also the error 
+variables of our fuzzy system RPM error and change of RPM error can be observed. From this 
+output, one can say that the fuzzy inference system’s fuzzy output PWM matches with change of 
+rpm error. Also, the motor tracks the desired RPM with significant error margin. Although desired 
+RPM and motor RPM aligns, there is an error gap occurred. The error is around -80 RPM. This 
+error might be lowered by adjusting the rule base or input membership functions, or adding some 
+rescaling operations to evaluate drive PWM, which is used to drive the motor.  
+
+## References  
+1. Belkhir, K. S. (2020). Simple Implementationof a FuzzyLogicSpeedController for a PMDC Motor witha LowCostArduino Mega. Departmentof ElectricalEngineering, Facultyof Technology, UniversityFerhat Abbas Setif1. Setif, Algeria. ksbelkhir@univ-setif.dz  
+ 2. Freitas, B. M., Rameli, M., & EAK, R. (2017). Implementationof MamdaniFuzzyLogicControl System on DC Motor SpeedController. Department of ElectricalEngineering, SepuluhNopember Instituteof Technology, Surabaya, Indonesia.  
+ 3. MATLAB. (2016, April 19). FuzzyInferenceSystem Walkthrough| FuzzyLogic, Part2 [Video]. YouTube. https://www.youtube.com/watch?v=r57CGLAzjZE
 
 
 
